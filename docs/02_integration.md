@@ -14,6 +14,9 @@ cargo build --release
 The compiled binary is located at:  
 `target/release/gatekeeper`
 
+> [!NOTE]
+> The binaries related to releases can also be downloaded from [Github](https://github.com/telota/gatekeeper/releases)
+
 ### Create System User
 Create a dedicated, unprivileged system user for the service:
 ```bash

@@ -9,6 +9,7 @@
 
 | Dimension | Implementation Details |
 | :--- | :--- |
+| **DOI** | [10.5281/zenodo.23189639](https://doi.org/10.5281/zenodo.23189639) |
 | **Licence** | Apache 2.0 |
 | **Tech Stack** | Rust (Axum, Tokio), Python for helper scripts |
 | **Integration** | systemd service unit |
@@ -46,6 +47,9 @@ By default, the showcase is configured to use port 8080. You can easily override
 ```bash
 echo 'SHOWCASE_PORT=8081' > .env
 ```
+
+> [!NOTE]
+> Check the [Releases](https://github.com/telota/gatekeeper/releases) for the latest binaries.
  
 ## Architecture & Request Flow
 
@@ -109,7 +113,8 @@ Our resources are **Open Access**: we want humans, search engine crawlers, and A
   month = oct,
   title = {{TELOTA Gatekeeper: A cryptographic, GDPR-compliant bot mitigation service for NGINX, written in Rust.}},
   url = {https://github.com/telota/gatekeeper},
-  year = {2026}
+  year = {2026},
+  doi = {10.5281/zenodo.23189639}
 }
 ```
  
