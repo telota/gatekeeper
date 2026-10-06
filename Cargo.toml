@@ -1,0 +1,25 @@
+[package]
+name = "gatekeeper"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7", features = ["macros"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+toml_edit = "0.22"
+sqlx = { version = "0.8", features = ["runtime-tokio", "tls-native-tls", "mysql"] }
+hmac = "0.12"
+sha2 = "0.10"
+hex = "0.4"
+rand = "0.8"
+cookie = { version = "0.18", features = ["percent-encode"] }
+axum-extra = { version = "0.9", features = ["cookie"] }
+tower = { version = "0.5" }
+tower-http = { version = "0.5", features = ["trace"] }
+askama = { version = "0.12" }
+time = { version = "0.3", features = ["serde", "formatting"] }
+hyper = { version = "1.0", features = ["server", "http1", "http2"] }
+hyper-util = { version = "0.1", features = ["server", "tokio", "server-auto"] }

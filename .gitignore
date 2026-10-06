@@ -1,0 +1,13 @@
+.env
+config.toml
+theme.toml
+*.sock
+
+services/bot-whitelist.conf
+services/metrics_history.json
+
+target/*
+!target/.gitkeep
+
+benchmark/results/*
+!benchmark/results/.gitkeep

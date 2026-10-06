@@ -1,0 +1,51 @@
+# Gatekeeper Theme Configuration (Optional)
+#
+# If this file is missing or individual keys are omitted, Gatekeeper 
+# automatically falls back to its built-in defaults.
+#
+# Changes to this file take effect upon daemon restart or by sending a SIGHUP signal:
+#   pkill -HUP -x gatekeeper
+
+[colors]
+# Header and footer background (accent color). Default: #262626
+header_footer_bg = "#262626"
+
+# Header and footer text color. Default: #ffffff
+header_footer_text = "#ffffff"
+
+# Overall page background. Default: #ffffff
+page_bg = "#ffffff"
+
+# Body text color. Default: #18181b
+text_color = "#18181b"
+
+# Verification card background color. Default: #f4f4f5
+card_bg = "#f4f4f5"
+
+# Verification card border color. Default: #c1c7cd
+card_border = "#c1c7cd"
+
+# Primary action button background (ready state). Default: #18181b
+btn_ready_bg = "#18181b"
+
+# Primary action button text color. Default: #ffffff
+btn_ready_text = "#ffffff"
+
+# -----------------------------------------------------------------------------
+# Institution Branding & Links
+#
+# Fallback strategy:
+# When a client requests a language, Gatekeeper looks for that specific language code.
+# If not configured, it tries the English ("en") entry once. If still missing,
+# the element is completely omitted from rendering.
+# -----------------------------------------------------------------------------
+
+#[institution.de]
+#name = "NAME"
+#imprint_url = ""
+#privacy_url = ""
+
+#[institution.en]
+#name = "NAME"
+#imprint_url = ""
+#privacy_url = ""

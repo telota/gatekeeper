@@ -1,0 +1,12 @@
+services:
+  10s_100con_gatekeeper_benchmark:
+    build:
+      context: ../
+      dockerfile: benchmark/build/10s-100con/Dockerfile
+    volumes:
+      - ./results:/results
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G

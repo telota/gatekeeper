@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <title>{{ page_title }}</title>
+    <style>
+        :root {
+            --header-footer-bg: {{ colors.header_footer_bg }};
+            --header-footer-text: {{ colors.header_footer_text }};
+            --page-bg: {{ colors.page_bg }};
+            --text-color: {{ colors.text_color }};
+            --card-bg: {{ colors.card_bg }};
+            --card-border: {{ colors.card_border }};
+            --btn-ready-bg: {{ colors.btn_ready_bg }};
+            --btn-ready-text: {{ colors.btn_ready_text }};
+
+            --btn-waiting-bg: #e4e4e7;
+            --btn-waiting-text: #71717a;
+
+            --btn-expired-bg: #fee2e2;
+            --btn-expired-text: #991b1b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--page-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+        }
+
+        /* Main Container */
+        main {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1.5rem;
+        }
+
+        /* Verification Card (Flat with customizable border) */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 2.5rem;
+            max-width: 580px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            container-type: inline-size;
+        }
+
+        .card-content {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Card Branding Head: Institution name & prominent domain */
+        .card-brand {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .institution-name {
+            font-size: clamp(0.85rem, 3cqi, 1.15rem);
+            font-weight: 600;
+            color: #52525b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            line-height: 1.3;
+            margin-bottom: 2.5rem;
+            display: block;
+        }
+
+        .domain-title {
+            font-size: clamp(1.4rem, 5.5cqi, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            line-height: 1.2;
+            display: block;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.5px;
+            color: var(--text-color);
+        }
+
+        /* Informational text */
+        .info-section {
+            text-align: left;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .info-text {
+            color: var(--text-color);
+        }
+
+        /* GDPR Cookie Notice */
+        .cookie-notice {
+            font-size: 0.8rem;
+            color: #71717a;
+            text-align: left;
+            margin-bottom: 2rem;
+            line-height: 1.45;
+        }
+
+        .cookie-notice code {
+            font-family: monospace;
+            background: #e4e4e7;
+            padding: 0.15rem 0.35rem;
+            border-radius: 4px;
+            color: var(--text-color);
+        }
+
+        /* Action Area */
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .verify-button {
+            width: 100%;
+            max-width: 320px;
+            padding: 0.95rem 2rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s ease, transform 0.1s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            outline: none;
+        }
+
+        /* Button States (Flat Filled) */
+        .verify-button.waiting {
+            background: var(--btn-waiting-bg);
+            color: var(--btn-waiting-text);
+            cursor: pointer;
+        }
+
+        .verify-button.ready {
+            background: var(--btn-ready-bg);
+            color: var(--btn-ready-text);
+        }
+
+        .verify-button.ready:hover {
+            opacity: 0.9;
+        }
+
+        .verify-button.ready:active {
+            transform: scale(0.99);
+        }
+
+        .verify-button.expired {
+            background: var(--btn-expired-bg);
+            color: var(--btn-expired-text);
+            cursor: pointer;
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            color: #71717a;
+            min-height: 1.25rem;
+            transition: color 0.2s ease;
+        }
+
+        .status-text.text-error {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        /* Footer (Flat Filled) */
+        footer {
+            background: var(--header-footer-bg);
+            color: var(--header-footer-text);
+            padding: 1.75rem 2rem;
+            font-size: 0.825rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        footer p {
+            opacity: 0.9;
+        }
+
+        .footer-links {
+            margin-top: 0.75rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--header-footer-text);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            opacity: 0.85;
+            transition: opacity 0.2s;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        .crawler-link {
+            pointer-events: none;
+            cursor: default;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(0, 0, 0, 0.15);
+            border-radius: 50%;
+            border-top-color: currentColor;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .verify-button.waiting .spinner {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main>
+        <div class="card">
+            <div class="card-content">
+                <div class="card-brand">
+                    {% if let Some(name) = institution.name %}
+                    <div id="inst-name" class="institution-name">{{ name }}</div>
+                    {% endif %}
+                    <div id="domain-name" class="domain-title">{{ domain }}</div>
+                </div>
+
+                <h1>{{ strings.page_heading }}</h1>
+
+                <div class="info-section">
+                    <p class="info-text">
+                        {{ strings.info_text }}
+                    </p>
+                </div>
+
+                <div class="cookie-notice">
+                    {{ strings.cookie_notice|safe }}
+                </div>
+
+                <div class="action-area">
+                    <button id="verify-btn" class="verify-button waiting" onclick="handleVerify()">
+                        <span class="spinner"></span>
+                        <span id="btn-text">{{ strings.btn_initializing }}</span>
+                    </button>
+                    <p id="status-text" class="status-text">{{ strings.status_determining }}</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 {% if let Some(name) = institution.name %}{{ name }}. {% endif %}{{ strings.footer_rights }}</p>
+        <p>{{ strings.footer_description }}</p>
+        <div class="footer-links">
+            {% if let Some(privacy) = institution.privacy_url %}
+            <a href="{{ privacy }}" target="_blank" rel="noopener noreferrer">{{ strings.privacy_label }}</a>
+            {% endif %}
+            {% if let Some(imprint) = institution.imprint_url %}
+            <a href="{{ imprint }}" target="_blank" rel="noopener noreferrer">{{ strings.imprint_label }}</a>
+            {% endif %}
+            <a href="{{ crawler_link|safe }}" class="crawler-link" aria-hidden="true" tabindex="-1"
+                rel="nofollow noindex" title="Data extraction interface for crawlers and agentic pipelines">For
+                Crawlers</a>
+        </div>
+    </footer>
+
+    <script>
+        const baseTimestamp = {{ base_timestamp }};
+        const delay = {{ delay_in_s }};
+        const validity = {{ validity_in_s }};
+        const authKey = "{{ auth_key }}";
+        const authValue = "{{ auth_value }}";
+
+        const i18n = {
+            btnWait: "{{ strings.js_btn_wait }}",
+            statusEarlyClick: "{{ strings.js_status_early_click }}",
+            statusWait: "{{ strings.js_status_wait }}",
+            btnReady: "{{ strings.js_btn_ready }}",
+            statusValid: "{{ strings.js_status_valid }}",
+            btnReload: "{{ strings.js_btn_reload }}",
+            statusExpired: "{{ strings.js_status_expired }}",
+            alertFailed: "{{ strings.js_alert_failed }}",
+            alertError: "{{ strings.js_alert_error }}",
+        };
+
+        // Dynamically scale typography so institution name and domain stay on a single line
+        function fitText(el, maxPx, minPx) {
+            if (!el) return;
+            let size = maxPx;
+            el.style.fontSize = size + 'px';
+            while (el.scrollWidth > el.clientWidth && size > minPx) {
+                size -= 0.5;
+                el.style.fontSize = size + 'px';
+            }
+        }
+
+        function autoFitHeadings() {
+            const instEl = document.getElementById('inst-name');
+            const domainEl = document.getElementById('domain-name');
+            if (instEl) fitText(instEl, 18, 11);
+            if (domainEl) fitText(domainEl, 32, 16);
+        }
+
+        window.addEventListener('resize', autoFitHeadings);
+        window.addEventListener('DOMContentLoaded', autoFitHeadings);
+        autoFitHeadings();
+
+        let pageLoadTime = Date.now();
+        let isEarlyClick = false;
+
+        function tick() {
+            const elapsedSeconds = Math.floor((Date.now() - pageLoadTime) / 1000);
+            const remainingDelay = delay - elapsedSeconds;
+            const remainingValidity = validity - elapsedSeconds;
+
+            const button = document.getElementById('verify-btn');
+            const btnText = document.getElementById('btn-text');
+            const statusText = document.getElementById('status-text');
+
+            if (remainingDelay > 0) {
+                button.className = 'verify-button waiting';
+                btnText.innerText = i18n.btnWait;
+
+                if (isEarlyClick) {
+                    statusText.classList.add('text-error');
+                    statusText.innerText = i18n.statusEarlyClick;
+                } else {
+                    statusText.classList.remove('text-error');
+                    statusText.innerText = i18n.statusWait.replace('{s}', remainingDelay);
+                }
+            } else if (remainingValidity >= 0) {
+                button.className = 'verify-button ready';
+                btnText.innerText = i18n.btnReady;
+                statusText.classList.remove('text-error');
+                statusText.innerText = i18n.statusValid.replace('{s}', remainingValidity);
+                isEarlyClick = false;
+            } else {
+                button.className = 'verify-button expired';
+                btnText.innerText = i18n.btnReload;
+                statusText.classList.remove('text-error');
+                statusText.innerText = i18n.statusExpired;
+                clearInterval(timer);
+            }
+        }
+
+        const timer = setInterval(tick, 1000);
+        tick();
+
+        async function handleVerify() {
+            const elapsedSeconds = Math.floor((Date.now() - pageLoadTime) / 1000);
+            if (elapsedSeconds < delay) {
+                pageLoadTime = Date.now();
+                isEarlyClick = true;
+                
+                const statusText = document.getElementById('status-text');
+                statusText.classList.add('text-error');
+                statusText.innerText = i18n.statusEarlyClick;
+                
+                tick();
+                return;
+            }
+            if (elapsedSeconds >= validity) {
+                location.reload();
+                return;
+            }
+
+            try {
+                const body = {};
+                body[authKey] = authValue;
+
+                const response = await fetch('/verify-request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert(i18n.alertFailed);
+                    location.reload();
+                }
+            } catch (e) {
+                alert(i18n.alertError);
+            }
+        }
+    </script>
+</body>
+
+</html>

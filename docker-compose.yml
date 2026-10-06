@@ -1,0 +1,7 @@
+services:
+  gatekeeper_showcase:
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile
+    ports:
+      - ${SHOWCASE_PORT:-8080}:80

@@ -1,0 +1,41 @@
+[Unit]
+Description=Gatekeeper WAF
+After=network.target
+
+[Service]
+Type=simple
+User=gatekeeper
+Group=www-data
+WorkingDirectory=/etc/gatekeeper
+ExecStart=/usr/local/bin/gatekeeper
+# Logging configuration
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gatekeeper
+
+# Runtime directory for the Unix Domain Socket
+# This automatically creates /run/gatekeeper/ and sets ownership to gatekeeper:www-data.
+# The directory is deleted when the service stops.
+RuntimeDirectory=gatekeeper
+RuntimeDirectoryMode=0755
+
+# Security hardening options
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true
+CapabilityBoundingSet=
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+
+# Restart Policy
+Restart=always
+RestartSec=100ms
+RestartSteps=5
+RestartMaxDelaySec=10s
+StartLimitIntervalSec=0
+
+[Install]
+WantedBy=multi-user.target

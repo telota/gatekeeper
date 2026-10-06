@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gatekeeper System Dashboard</title>
+    <style>
+        :root {
+            --bg-base: #0a0a0c;
+            --bg-surface: rgba(26, 26, 30, 0.45);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.18);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent-silver: #d1d5db;
+            --accent-silver-dark: #4b5563;
+            --glow-color: rgba(255, 255, 255, 0.03);
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.015) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.01) 0px, transparent 50%);
+        }
+
+        header {
+            width: 100%;
+            max-width: 1280px;
+            margin-bottom: 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        .brand h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand h1::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background: linear-gradient(180deg, #ffffff 0%, #6b7280 100%);
+            border-radius: 2px;
+        }
+
+        .brand p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            font-family: var(--font-mono);
+        }
+
+        .uptime-badge {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(12px);
+            color: var(--text-secondary);
+        }
+
+        .uptime-badge span {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1280px;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .no-data {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 4rem;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            backdrop-filter: blur(12px);
+            padding: 1.75rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 4px 30px rgba(255, 255, 255, 0.02);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+        }
+
+        /* Metrics grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 992px) {
+            .metrics-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+
+        .metric-tile {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+        }
+
+        /* SVG Trend Charts */
+        .chart-container {
+            border-top: 1px dashed var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .svg-chart {
+            width: 100%;
+            height: 180px;
+            display: block;
+        }
+
+        .chart-bar {
+            fill: #4b5563;
+            transition: fill 0.2s ease, opacity 0.2s ease;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            fill: #9ca3af;
+        }
+
+        .chart-grid-line {
+            stroke: rgba(255, 255, 255, 0.04);
+            stroke-width: 1;
+        }
+
+        .chart-axis-text {
+            fill: var(--text-muted);
+            font-size: 10px;
+            font-family: var(--font-mono);
+        }
+
+        .chart-tooltip {
+            fill: var(--text-primary);
+            font-size: 10px;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            text-anchor: middle;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            pointer-events: none;
+        }
+
+        /* Table view for overview */
+        .table-card {
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        th {
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+        }
+
+        tr.clickable {
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        tr.clickable:hover td {
+            background: rgba(255, 255, 255, 0.02);
+            color: #ffffff;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        td.value-cell {
+            padding-right: 0.15rem;
+            padding-left: 0.85rem;
+        }
+
+        td.trend-cell {
+            padding-left: 0.15rem;
+            padding-right: 0.85rem;
+        }
+
+        /* Tendency Badges */
+        .trend-badge {
+            font-size: 0.75rem;
+            margin-left: 0.35rem;
+            font-family: var(--font-mono);
+            font-weight: normal;
+        }
+
+        .trend-up {
+            color: var(--text-primary);
+            opacity: 0.95;
+        }
+
+        .trend-down {
+            color: var(--text-muted);
+        }
+
+        .trend-neutral {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Modal Overlay Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(8, 8, 10, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1.5rem;
+        }
+
+        .modal-container {
+            width: 100%;
+            max-width: 1100px;
+            background: #111114;
+            border: 1px solid var(--border-hover);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-content {
+            padding: 2.25rem;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .modal-close-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .uptime-badge {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="brand">
+            <h1>Gatekeeper</h1>
+            <p>SYSTEM METRICS & TRAFFIC ANALYSIS</p>
+        </div>
+        <div class="uptime-badge" id="uptime-badge">
+            Daemon Status: <span id="uptime-text">OFFLINE</span>
+        </div>
+    </header>
+
+    <main id="dashboard-content">
+        <div class="no-data">Loading metrics history...</div>
+    </main>
+
+    <!-- Sleek Modal for Domain Details -->
+    <div id="domain-modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-container" onclick="event.stopPropagation()">
+            <div class="modal-content">
+                <div class="card-header" style="margin-bottom: 2rem;">
+                    <h2 class="card-title" id="modal-domain-title">domain.com</h2>
+                    <button class="modal-close-btn" onclick="closeModal()">[X] CLOSE</button>
+                </div>
+                <div id="modal-metrics-grid" class="metrics-grid"></div>
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <span>History Last 7 Days (Total Activity & Blocks)</span>
+                    </div>
+                    <div id="modal-chart-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let globalHistory = [];
+
+        function formatNumber(val) {
+            return new Intl.NumberFormat('de-DE').format(val || 0);
+        }
+
+        async function fetchHistory() {
+            try {
+                const response = await fetch('/gatekeeper/dashboard/history');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                globalHistory = data.history || [];
+                renderDashboard(data);
+            } catch (e) {
+                console.error("Failed to load metrics history:", e);
+                document.getElementById('dashboard-content').innerHTML = `
+                    <div class="no-data" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">
+                        Failed to load metrics history (metrics_history.json).<br>
+                        Ensure the helper cron script has run at least once.
+                    </div>
+                `;
+            }
+        }
+
+        function formatUptime(startTime) {
+            if (!startTime) return "Unknown";
+            const now = Math.floor(Date.now() / 1000);
+            const diffSeconds = now - startTime;
+
+            if (diffSeconds < 0) return "Uptime difference invalid";
+
+            const days = Math.floor(diffSeconds / (24 * 3600));
+            const hours = Math.floor((diffSeconds % (24 * 3600)) / 3600);
+            const minutes = Math.floor((diffSeconds % 3600) / 60);
+
+            let parts = [];
+            if (days > 0) parts.push(`${days}d`);
+            if (hours > 0 || days > 0) parts.push(`${hours}h`);
+            parts.push(`${minutes}m`);
+
+            const startStr = new Date(startTime * 1000).toLocaleString('en-US', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            return `${parts.join(' ')} (since ${startStr})`;
+        }
+
+        // Extrapolates expected today's value and calculates difference to historical average
+        function getMetricTrend(domain, metricName, todayVal) {
+            const history = globalHistory;
+            if (history.length < 2) return ""; // Need at least today + 1 complete day to show trend
+
+            const completeDays = history.slice(0, -1);
+
+            // Average of past completed days
+            let sum = 0;
+            completeDays.forEach(day => {
+                const dMetrics = (day.domains && day.domains[domain]) || {};
+                sum += (dMetrics[metricName] || 0);
+            });
+            const avg = sum / completeDays.length;
+
+            // Extrapolate today's expected final value based on elapsed hours
+            const now = new Date();
+            const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+            const currentHours = Math.max(hours, 0.1);
+
+            const expectedToday = (todayVal / currentHours) * 24;
+            let trendPercent = avg > 0 ? Math.round((expectedToday / avg) * 100 - 100) : (expectedToday > 0 ? 100 : 0);
+
+            // Limit trend to +/-999% to prevent layout breakage
+            trendPercent = Math.max(-999, Math.min(999, trendPercent));
+
+            let diffSign = "";
+            let trendClass = "";
+            if (trendPercent > 0) {
+                diffSign = `+${trendPercent}%`;
+                trendClass = "trend-up";
+            } else if (trendPercent < 0) {
+                diffSign = `${trendPercent}%`;
+                trendClass = "trend-down";
+            } else {
+                diffSign = `±0%`;
+                trendClass = "trend-neutral";
+            }
+
+            const title = `Expected today: ${Math.round(expectedToday)} (Extrapolated) vs. Avg ${Math.round(avg)} over the past ${completeDays.length} days`;
+            return `<span class="trend-badge ${trendClass}" title="${title}">(${diffSign})</span>`;
+        }
+
+        function renderDashboard(data) {
+            const content = document.getElementById('dashboard-content');
+            content.innerHTML = '';
+
+            // Render Uptime
+            const uptimeText = document.getElementById('uptime-text');
+            if (data.last_start_time) {
+                uptimeText.innerText = formatUptime(data.last_start_time);
+            } else {
+                uptimeText.innerText = "NO DATA";
+            }
+
+            const history = data.history || [];
+            if (history.length === 0) {
+                content.innerHTML = '<div class="no-data">No historical data found for the last 7 days.</div>';
+                return;
+            }
+
+            // Extract all unique domains from history
+            const domainsSet = new Set();
+            history.forEach(day => {
+                if (day.domains) {
+                    Object.keys(day.domains).forEach(domain => domainsSet.add(domain));
+                }
+            });
+            const domains = Array.from(domainsSet).sort();
+
+            if (domains.length === 0) {
+                content.innerHTML = '<div class="no-data">No active domain metrics recorded in history.</div>';
+                return;
+            }
+
+            // Overview Table Card
+            const tableCard = document.createElement('div');
+            tableCard.className = 'card table-card';
+
+            let tableHtml = `
+                <div class="card-header">
+                    <h2 class="card-title">CURRENT DAY OVERVIEW (${history[history.length - 1].date})</h2>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Domain / Host</th>
+                                <th class="text-right" colspan="2">Valid Cookies</th>
+                                <th class="text-right" colspan="2">Blocked (No Cookie)</th>
+                                <th class="text-right" colspan="2">Blocked (Invalid)</th>
+                                <th class="text-right" colspan="2">Verified</th>
+                                <th class="text-right" colspan="2">Failed</th>
+                                <th class="text-right" colspan="2">Good Bots</th>
+                                <th class="text-right" colspan="2">Honeypot</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            const todayData = history[history.length - 1].domains || {};
+            domains.forEach(domain => {
+                const m = todayData[domain] || {
+                    good_bot_passes: 0,
+                    cookie_accepted: 0,
+                    blocks_no_cookie: 0,
+                    blocks_invalid_cookie: 0,
+                    verification_successful: 0,
+                    verification_failed: 0,
+                    honeypot_hits: 0
+                };
+                tableHtml += `
+                    <tr class="clickable" onclick="openModal('${domain}')">
+                        <td><strong>${domain}</strong></td>
+                        <td class="text-right value-cell">${formatNumber(m.cookie_accepted)}</td>
+                        <td class="text-left trend-cell">${getMetricTrend(domain, 'cookie_accepted', m.cookie_accepted || 0)}</td>
+                        
+                        <td class="text-right value-cell">${formatNumber(m.blocks_no_cookie)}</td>
+                        <td class="text-left trend-cell">${getMetricTrend(domain, 'blocks_no_cookie', m.blocks_no_cookie || 0)}</td>
+                        
+                        <td class="text-right value-cell">${formatNumber(m.blocks_invalid_cookie)}</td>
+                        <td class="text-left trend-cell">${getMetricTrend(domain, 'blocks_invalid_cookie', m.blocks_invalid_cookie || 0)}</td>
+                        
+                        <td class="text-right value-cell">${formatNumber(m.verification_successful)}</td>
+                        <td class="text-left trend-cell">${getMetricTrend(domain, 'verification_successful', m.verification_successful || 0)}</td>
+                        
+                        <td class="text-right value-cell">${formatNumber(m.verification_failed)}</td>
+                        <td class="text-left trend-cell">${getMetricTrend(domain, 'verification_failed', m.verification_failed || 0)}</td>
+                        
+                        <td class="text-right value-cell">${formatNumber(m.good_bot_passes)}</td>
+                        <td class="text-left trend-cell">${getMetricTrend(domain, 'good_bot_passes', m.good_bot_passes || 0)}</td>
+                        
+                        <td class="text-right value-cell">${formatNumber(m.honeypot_hits)}</td>
+                        <td class="text-left trend-cell">${getMetricTrend(domain, 'honeypot_hits', m.honeypot_hits || 0)}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `</tbody></table></div>`;
+            tableCard.innerHTML = tableHtml;
+            content.appendChild(tableCard);
+        }
+
+        function openModal(domain) {
+            const modal = document.getElementById('domain-modal');
+            document.getElementById('modal-domain-title').innerText = domain;
+
+            // Get today's stats for tiles
+            const history = globalHistory;
+            const todayData = history[history.length - 1].domains || {};
+            const todayMetrics = todayData[domain] || {};
+
+            const metricsGrid = document.getElementById('modal-metrics-grid');
+            metricsGrid.innerHTML = `
+                <div class="metric-tile">
+                    <span class="metric-label">Valid<br/>Cookies</span>
+                    <span class="metric-value">${formatNumber(todayMetrics.cookie_accepted)}</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="metric-label">Blocked<br/>(No Cookie)</span>
+                    <span class="metric-value">${formatNumber(todayMetrics.blocks_no_cookie)}</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="metric-label">Blocked<br/>(Invalid)</span>
+                    <span class="metric-value">${formatNumber(todayMetrics.blocks_invalid_cookie)}</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="metric-label">Verified<br/>&ensp;</span>
+                    <span class="metric-value">${formatNumber(todayMetrics.verification_successful)}</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="metric-label">Failed<br/>&ensp;</span>
+                    <span class="metric-value">${formatNumber(todayMetrics.verification_failed)}</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="metric-label">Good Bots<br/>&ensp;</span>
+                    <span class="metric-value">${formatNumber(todayMetrics.good_bot_passes)}</span>
+                </div>
+                <div class="metric-tile">
+                    <span class="metric-label">Honeypot<br/>Hits</span>
+                    <span class="metric-value">${formatNumber(todayMetrics.honeypot_hits)}</span>
+                </div>
+            `;
+
+            // Render SVG chart inside modal container
+            renderSvgChart(domain, history, 'modal-chart-container');
+
+            modal.style.display = 'flex';
+        }
+
+        // Closes modal if user clicks outside of container or on close button
+        function closeModal() {
+            document.getElementById('domain-modal').style.display = 'none';
+        }
+
+        function renderSvgChart(domain, history, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const width = 1200;
+            const height = 180;
+            const paddingLeft = 45;
+            const paddingRight = 10;
+            const paddingTop = 20;
+            const paddingBottom = 25;
+
+            // Calculate totals for each of the last 7 days
+            const chartData = history.map(day => {
+                const dMetrics = (day.domains && day.domains[domain]) || {};
+                const blocks = (dMetrics.blocks_no_cookie || 0) + (dMetrics.blocks_invalid_cookie || 0);
+                const passes = (dMetrics.cookie_accepted || 0) + (dMetrics.good_bot_passes || 0) + (dMetrics.verification_successful || 0);
+                const total = blocks + passes;
+                return {
+                    date: day.date,
+                    blocks: blocks,
+                    passes: passes,
+                    total: total
+                };
+            });
+
+            // Find max value to scale Y-axis
+            const maxVal = Math.max(...chartData.map(d => d.total), 10);
+            const yTicksMax = Math.ceil(maxVal / 10) * 10;
+
+            const chartWidth = width - paddingLeft - paddingRight;
+            const chartHeight = height - paddingTop - paddingBottom;
+            const colWidth = chartWidth / chartData.length;
+            const barWidth = Math.max(colWidth * 0.5, 30);
+
+            let svgContent = `<svg viewBox="0 0 ${width} ${height}" class="svg-chart">`;
+            // Draw Y-axis grid lines (3 lines)
+            for (let i = 0; i <= 3; i++) {
+                const yVal = yTicksMax * (i / 3);
+                const yPos = height - paddingBottom - (chartHeight * (i / 3));
+                svgContent += `
+                    <line x1="${paddingLeft}" y1="${yPos}" x2="${width - paddingRight}" y2="${yPos}" class="chart-grid-line" />
+                    <text x="${paddingLeft - 8}" y="${yPos + 4}" class="chart-axis-text" text-anchor="end">${formatNumber(Math.round(yVal))}</text>
+                `;
+            }
+
+            // Draw bars
+            chartData.forEach((d, idx) => {
+                const xPos = paddingLeft + (idx * colWidth) + (colWidth - barWidth) / 2;
+
+                const totalHeight = (d.total / yTicksMax) * chartHeight;
+                const blocksHeight = (d.blocks / yTicksMax) * chartHeight;
+                const passesHeight = (d.passes / yTicksMax) * chartHeight;
+
+                const totalY = height - paddingBottom - totalHeight;
+                const blocksY = height - paddingBottom - blocksHeight;
+                const passesY = totalY;
+
+                const dateLabel = d.date.substring(5);
+                const tooltipId = `tooltip-${containerId}-${idx}`;
+
+                svgContent += `
+                    <!-- Background bar (hover area) -->
+                    <g onmouseover="document.getElementById('${tooltipId}').style.opacity = 1" 
+                       onmouseout="document.getElementById('${tooltipId}').style.opacity = 0">
+                        
+                        <!-- Passes segment (Silver Accent) -->
+                        <rect x="${xPos}" y="${passesY}" width="${barWidth}" height="${passesHeight}" 
+                               class="chart-bar" style="fill: #9ca3af;" />
+                        
+                        <!-- Blocks segment (Dark Silver Accent) -->
+                        <rect x="${xPos}" y="${blocksY}" width="${barWidth}" height="${blocksHeight}" 
+                               class="chart-bar" style="fill: #4b5563;" />
+                        
+                        <!-- Axis Date Label -->
+                        <text x="${xPos + barWidth / 2}" y="${height - 8}" class="chart-axis-text" text-anchor="middle">${dateLabel}</text>
+                        
+                        <!-- Interactive Tooltip -->
+                        <text id="${tooltipId}" x="${xPos + barWidth / 2}" y="${totalY - 8}" class="chart-tooltip">
+                            Blocks: ${formatNumber(d.blocks)} | OK: ${formatNumber(d.passes)}
+                        </text>
+                    </g>
+                `;
+            });
+
+            svgContent += `</svg>`;
+            container.innerHTML = svgContent;;
+        }
+
+        // Initialize
+        fetchHistory();
+        // Refresh every 5 minutes
+        setInterval(fetchHistory, 5 * 60 * 1000);
+    </script>
+</body>
+
+</html>

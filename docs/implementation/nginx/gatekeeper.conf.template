@@ -1,0 +1,18 @@
+# Example Server-Config for NGINX
+
+include snippets/gatekeeper/upstream.conf;
+
+server {
+    # listen 443 ssl; # No SSL in Dev
+    listen 80;
+    server_name localhost; # Or local Dev-IP / Domain
+
+    include snippets/gatekeeper/endpoints.conf;
+    include snippets/gatekeeper/honeypot.conf;
+
+    location ^~ /search {
+        include snippets/gatekeeper/protect.conf;
+
+        proxy_pass http://127.0.0.1; # Service to protect
+    }
+}

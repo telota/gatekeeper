@@ -1,0 +1,9 @@
+[gatekeeper]
+app_key = ""
+verification_form_modifier = 9973
+verification_form_delay_in_s = 2
+verification_form_validity_in_s = 60
+socket_path = "/var/run/gatekeeper/gatekeeper.sock"
+cookie_duration_in_days = 90
+user_agent_list_limit = 10000
+user_agent_request_treshold = 5
