@@ -34,7 +34,7 @@ jobs:
           target: ${{ matrix.target }}
           token: ${{ secrets.GITHUB_TOKEN }}
           tar: unix
-          zip: false
+          zip: none
           dry-run: ${{ github.event_name == 'workflow_dispatch' }}
           dry-run-intended: ${{ github.event_name == 'workflow_dispatch' }}
           include: |
