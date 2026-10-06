@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+authors:
+  - family-names: "Köster"
+    given-names: "Jan"
+    affiliation: "Berlin-Brandenburg Academy of Sciences and Humanities"
+    orcid: "https://orcid.org/0000-0003-2713-5207"
+title: "TELOTA Gatekeeper: A cryptographic, GDPR-compliant bot mitigation service for NGINX, written in Rust"
+date-released: 2026-10-06
+license: Apache-2.0
+repository-code: "https://github.com/telota/gatekeeper"
+keywords:
+  - "Digital Humanities",
+  - "Anti-bot",
+  - "Anti-scraping",
+  - "Bot-detection",
+  - "Bot-mitigation",
+  - "GDPR",
+  - "GDPR-compliant",
+  - "GLAM",
+  - "NGINX",
+  - "Rust",
+  - "Systemd"

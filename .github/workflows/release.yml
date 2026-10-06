@@ -9,20 +9,8 @@ permissions:
   contents: write
 
 jobs:
-  # 1. Job: Erstellt das Release-Objekt auf GitHub
-  create-release:
-    name: Create GitHub Release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: taiki-e/create-gh-release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  # 2. Job: Baut parallel für x86_64 und aarch64 und lädt die Tarballs hoch
   upload-assets:
     name: Build & Upload (${{ matrix.target }})
-    needs: create-release
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -47,6 +35,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tar: unix
           zip: false
+          dry-run: ${{ github.event_name == 'workflow_dispatch' }}
+          dry-run-intended: ${{ github.event_name == 'workflow_dispatch' }}
           include: |
             config.toml.example
             theme.toml.example
