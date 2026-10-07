@@ -6,19 +6,19 @@ authors:
     affiliation: "Berlin-Brandenburg Academy of Sciences and Humanities"
     orcid: "https://orcid.org/0000-0003-2713-5207"
 title: "TELOTA Gatekeeper: A cryptographic, GDPR-compliant bot mitigation service for NGINX, written in Rust"
-date-released: 2026-10-06
+date-released: "2026-10-06"
 doi: "10.5281/zenodo.23189639"
-license: Apache-2.0
+license: "Apache-2.0"
 repository-code: "https://github.com/telota/gatekeeper"
 keywords:
-  - "Digital Humanities",
-  - "Anti-bot",
-  - "Anti-scraping",
-  - "Bot-detection",
-  - "Bot-mitigation",
-  - "GDPR",
-  - "GDPR-compliant",
-  - "GLAM",
-  - "NGINX",
-  - "Rust",
+  - "Digital Humanities"
+  - "Anti-bot"
+  - "Anti-scraping"
+  - "Bot-detection"
+  - "Bot-mitigation"
+  - "GDPR"
+  - "GDPR-compliant"
+  - "GLAM"
+  - "NGINX"
+  - "Rust"
   - "Systemd"
